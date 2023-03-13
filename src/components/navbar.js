@@ -1,6 +1,5 @@
 import {
   AppBar,
-  Avatar,
   Box,
   Button,
   Container,
@@ -11,21 +10,28 @@ import {
   ListItemText,
   Menu,
   MenuItem,
+  TextField,
   Toolbar,
   Tooltip,
   Typography,
 } from "@mui/material";
+import Avatar from "@mui/material/Avatar";
+import { signIn, signOut, useSession } from "next-auth/react";
 import Image from "next/image";
 import { useState } from "react";
 import logoOne from "../Assets/logoDark.png";
 import logoTwo from "../Assets/logoWhite.png";
 
-const pages = ["Products", "Pricing", "Blog"];
-const settings = ["Profile", "Account", "Dashboard", "Logout"];
+const pages = ["Products"];
+const settings = ["Profile", "Account", "Dashboard"];
 
 function Navbar() {
   const [anchorElNav, setAnchorElNav] = useState(null);
   const [anchorElUser, setAnchorElUser] = useState(null);
+  const [isSignIn, setIsSignIn] = useState(true);
+  const { data } = useSession();
+  const user = data?.user;
+  console.log(user);
 
   const handleOpenNavMenu = (event) => {
     setAnchorElNav(event.currentTarget);
@@ -46,7 +52,11 @@ function Navbar() {
     <AppBar
       elevation={0}
       position="sticky"
-      style={{ background: "#fff", color: "black" }}
+      style={{
+        background: "#fff",
+        color: "black",
+        borderBottom: "1px solid #CFCFCF",
+      }}
     >
       <Container
         style={{ paddingLeft: "0px", paddingRight: "0px" }}
@@ -58,49 +68,114 @@ function Navbar() {
         >
           <Image src={logoOne} alt="logo" height={80}></Image>
 
-          <div style={{display: "flex", gap: '10px', alignItems: 'center', marginRight: '8px'}}>
-            <List sx={{ display: { xs: "none", md: "flex", gap: "10px" } }}>
-              {pages.map((item) => (
-                <ListItem key={item} disablePadding>
-                  <ListItemButton sx={{ textAlign: "center" }}>
-                    <ListItemText primary={item} />
-                  </ListItemButton>
-                </ListItem>
-              ))}
-            </List>
-
-            <Box sx={{ flexGrow: 0 }}>
-              <Tooltip title="Open settings">
-                <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                  <Avatar
-                    alt="Remy Sharp"
-                    src="https://scontent.fdac27-2.fna.fbcdn.net/v/t39.30808-6/332902300_6067613799990055_7532404620724800054_n.jpg?_nc_cat=101&ccb=1-7&_nc_sid=09cbfe&_nc_eui2=AeFex6Cf3ASRV5eTBRDelWbIC7YC30svc9ALtgLfSy9z0KpaMG0D1D6tUHRi8_wgp5EqQc4pLGEdrri9VWMP8iK3&_nc_ohc=gunI0tvdyLIAX9K5OwN&_nc_ht=scontent.fdac27-2.fna&oh=00_AfCjidLjse3WzH-uAZLPIxtYezcTkByRTXeS0XuaeO22MQ&oe=6411E016"
-                  />
-                </IconButton>
-              </Tooltip>
-              <Menu
-                sx={{ mt: "45px" }}
-                id="menu-appbar"
-                anchorEl={anchorElUser}
-                anchorOrigin={{
-                  vertical: "top",
-                  horizontal: "right",
-                }}
-                keepMounted
-                transformOrigin={{
-                  vertical: "top",
-                  horizontal: "right",
-                }}
-                open={Boolean(anchorElUser)}
-                onClose={handleCloseUserMenu}
-              >
-                {settings.map((setting) => (
-                  <MenuItem key={setting} onClick={handleCloseUserMenu}>
-                    <Typography textAlign="center">{setting}</Typography>
-                  </MenuItem>
+          <div
+            style={{
+              display: "flex",
+              gap: "10px",
+              alignItems: "center",
+              marginRight: "8px",
+            }}
+          >
+            {" "}
+            {user && (
+              <div>
+                <TextField
+                  sx={{ display: { xs: "none", md: "block" } }}
+                  size="small"
+                  id="outlined-basic"
+                  label="Search"
+                  variant="outlined"
+                />
+              </div>
+            )}
+            {user && (
+              <List sx={{ display: { xs: "none", md: "flex", gap: "10px" } }}>
+                {pages.map((item) => (
+                  <ListItem key={item} disablePadding>
+                    <ListItemButton sx={{ textAlign: "center" }}>
+                      <ListItemText primary={item} />
+                    </ListItemButton>
+                  </ListItem>
                 ))}
-              </Menu>
-            </Box>
+              </List>
+            )}
+            {!user && (
+              <>
+                <Button
+                sx={{px: 3}}
+                  style={{
+                    display: isSignIn ? "none" : "block",
+                    backgroundColor: "#2C3333",
+                    color: "#FFFFFF",
+                  }}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    setIsSignIn(true);
+                    signIn();
+                  }}
+                >
+                  Sign In
+                </Button>
+                <Button
+                  style={{ display: isSignIn ? "block" : "none" }}
+                  variant="contained"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    setIsSignIn(false);
+                    // signIn();
+                  }}
+                >
+                  Sign Up
+                </Button>
+              </>
+            )}
+            {user && (
+              <Button
+                variant="contained"
+                onClick={(e) => {
+                  e.preventDefault();
+                  signOut();
+                }}
+              >
+                Sign Out
+              </Button>
+            )}
+            {user && (
+              <Box sx={{ flexGrow: 0 }}>
+                <Tooltip title="Open settings">
+                  <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
+                    <Avatar alt="Remy Sharp" src={user?.image} />
+                  </IconButton>
+                </Tooltip>
+                <Menu
+                  sx={{ mt: "45px" }}
+                  id="menu-appbar"
+                  anchorEl={anchorElUser}
+                  anchorOrigin={{
+                    vertical: "top",
+                    horizontal: "right",
+                  }}
+                  keepMounted
+                  transformOrigin={{
+                    vertical: "top",
+                    horizontal: "right",
+                  }}
+                  open={Boolean(anchorElUser)}
+                  onClose={handleCloseUserMenu}
+                >
+                  {settings.map((setting) => (
+                    <MenuItem key={setting} onClick={handleCloseUserMenu}>
+                      <Typography textAlign="center">{setting}</Typography>
+                    </MenuItem>
+                  ))}
+                  {/* <MenuItem>
+                  <Button variant="contained" href="#contained-buttons">
+                    Sign Up
+                  </Button>
+                </MenuItem> */}
+                </Menu>
+              </Box>
+            )}
           </div>
         </Toolbar>
       </Container>
