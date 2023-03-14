@@ -1,13 +1,15 @@
 import { Container } from "@mui/material";
+import Footer from "./footer";
 
 const { default: Navbar } = require("./navbar");
 
 function Layout({ children }) {
   return (
     <Container  maxWidth={false} style={{ background: '#fff' , minHeight: '100vh', padding: '0'}}>
-      <Container maxWidth="xl" style={{paddingLeft: '5px', paddingRight: '5px'}}>
+      <Container maxWidth="xl" style={{padding: '0'}}>
         <Navbar />
-        <main style={{paddingLeft: '10px', paddingRight: '10px'}}>{children}</main>
+        <main >{children}</main>
+        <Footer></Footer>
       </Container>
     </Container>
   );

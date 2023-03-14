@@ -1,7 +1,7 @@
 const { default: Lottie } = require("react-lottie");
-import animationData from '../Animation/SignUpAnimation.json'
+import animationData from '../Animation/HeroAnimation.json'
 
-function SignUpAnimation() {
+function HeroAnimation() {
     const defaultOptions = {
       loop: true,
       autoplay: true,
@@ -14,4 +14,4 @@ function SignUpAnimation() {
     return <Lottie id='lottie-icon' options={defaultOptions} style={{width: '100%'}} />;
   }
 
-  export default SignUpAnimation;
+  export default HeroAnimation;
