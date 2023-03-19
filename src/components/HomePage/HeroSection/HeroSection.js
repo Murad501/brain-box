@@ -1,11 +1,10 @@
 import * as React from "react";
 import Paper from "@mui/material/Paper";
 import Grid from "@mui/material/Grid";
-import heroImage from "../../../Assets/HeroImage.jpg";
 import Typography from "@mui/material/Typography";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import Image from "next/image";
-import HeroAnimation from "@/components/Animation/HeroAnimation";
+import heroImage from "../../../Assets/HeroImage2.jpg";
 
 const theme = createTheme();
 
@@ -33,15 +32,7 @@ export default function HeroSection() {
           </Typography>
         </Grid>
         <Grid item xs={12} md={6} component={Paper} elevation={0} square>
-          {/* <Image
-            src={heroImage}
-            alt="heroImage"
-            layout="responsive"
-            width={1920}
-            height={1080}
-            
-          /> */}
-          <HeroAnimation></HeroAnimation>
+          <Image src={heroImage} alt="" style={{width: '100%', height: 'auto'}} ></Image>
         </Grid>
       </Grid>
     </ThemeProvider>

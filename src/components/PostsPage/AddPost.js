@@ -23,13 +23,21 @@ const {
 } = require("@mui/material");
 import { GrAttachment } from "react-icons/gr";
 import { Check } from "@mui/icons-material";
+import axios from "axios";
 
 function AddPost() {
   const [isPosting, setIsPosting] = useState(false);
   const [fileInputText, setFileInputText] = useState("");
-  const [tags, setTags] = useState([]);
   const [tagValue, setTagValue] = useState("");
+
+  const [tags, setTags] = useState([]);
+  const [postText, setPostText] = useState("");
+  const [postType, setPostType] = useState("public");
+  const [imageFile, setImageFile] = useState(null);
+  const imgbbApi = process.env.NEXT_PUBLIC_Imgbb_API;
+
   const handleFileInputChange = (e) => {
+    setImageFile(e.target?.files[0]);
     setFileInputText(e.target?.files[0]?.name);
   };
 
@@ -50,9 +58,22 @@ function AddPost() {
     e.target.reset();
   };
   const handleRemoveTag = (removeTag) => {
-    console.log(removeTag);
     const currentTags = tags.filter((tag) => tag !== removeTag);
     setTags([...currentTags]);
+  };
+
+  const handleAddPost = () => {
+    const imageData = new FormData();
+    imageData.set("key", imgbbApi);
+    imageData.append("image", imageFile);
+    axios
+      .post(`https://api.imgbb.com/1/upload`, imageData)
+      .then((res) => {
+        if (res.data.data.url) {
+          const imgUrl = res.data.data.url;
+        }
+      })
+      .catch((error) => console.log(error));
   };
 
   return (
@@ -76,6 +97,7 @@ function AddPost() {
           {isPosting ? (
             <FormControl sx={{ width: "100%" }}>
               <Textarea
+                onChange={(e) => setPostText(e.target?.value)}
                 variant="plain"
                 minRows={3}
                 placeholder="What's new, One?"
@@ -137,7 +159,7 @@ function AddPost() {
                   <Box sx={{ display: "flex", alignItems: "center", ml: 1 }}>
                     <AiFillTags></AiFillTags>
                     <Input
-                      onChange={(e) => setTagValue(e.target.value)}
+                      onChange={(e) => setTagValue(e.target?.value)}
                       onFocus={() => setIsPosting(true)}
                       sx={{ borderRadius: 12, display: "block", ml: 1 }}
                       placeholder="Add a tag..."
@@ -214,7 +236,11 @@ function AddPost() {
               >
                 <Grid item>
                   <CssVarsProvider theme={theme}>
-                    <Select defaultValue="Public" placeholder="Post Type">
+                    <Select
+                      onChange={(e) => setPostType(e?.target?.innerText)}
+                      defaultValue="Public"
+                      placeholder="Post Type"
+                    >
                       <Option value="public">Public</Option>
                       <Option value="private">Private</Option>
                     </Select>
@@ -230,6 +256,7 @@ function AddPost() {
                     Cancel
                   </Button>
                   <Button
+                    onClick={() => handleAddPost()}
                     color="primary"
                     // onClick={function () {}}
                     size="sm"

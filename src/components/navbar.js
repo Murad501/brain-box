@@ -18,6 +18,7 @@ import {
 import Avatar from "@mui/material/Avatar";
 import { signIn, signOut, useSession } from "next-auth/react";
 import Image from "next/image";
+import Link from "next/link";
 import { useState } from "react";
 import logoOne from "../Assets/logoDark.png";
 import logoTwo from "../Assets/logoWhite.png";
@@ -31,7 +32,6 @@ function Navbar() {
   const [isSignIn, setIsSignIn] = useState(true);
   const { data } = useSession();
   const user = data?.user;
-  console.log(user);
 
   const handleOpenNavMenu = (event) => {
     setAnchorElNav(event.currentTarget);
@@ -66,7 +66,7 @@ function Navbar() {
           style={{ display: "flex", justifyContent: "space-between" }}
           disableGutters
         >
-          <Image src={logoOne} alt="logo" height={80}></Image>
+          <Link href='/'><Image src={logoOne} alt="logo" height={80}></Image></Link>
 
           <div
             style={{
@@ -99,6 +99,7 @@ function Navbar() {
                 ))}
               </List>
             )}
+            <Link href='/posts'>Posts</Link>
             {!user && (
               <>
                 <Button
