@@ -13,12 +13,8 @@ async function handler(req, res) {
         "actions.love": love
       }
     }
-    // console.log('love',love)
-    // const queryResearch = await researchesCollection.findOne(query)
-    // console.log(queryResearch)
-    // // Insert data into MongoDB
+
     const result = await researchesCollection.updateOne(query, updateDoc)
-    console.log(result)
     res.status(200).json(result);
   }
 }

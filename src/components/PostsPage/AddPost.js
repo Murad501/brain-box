@@ -27,7 +27,7 @@ import axios from "axios";
 import { toast } from "react-hot-toast";
 import { useSession } from "next-auth/react";
 
-function AddPost({refetch}) {
+function AddPost({ refetch }) {
   const [isPosting, setIsPosting] = useState(false);
   const [fileInputText, setFileInputText] = useState("");
   const [tagValue, setTagValue] = useState("");
@@ -68,6 +68,7 @@ function AddPost({refetch}) {
 
   const handleAddPost = (e) => {
     e.preventDefault();
+    console.log('add posting')
     const imageData = new FormData();
     imageData.set("key", imgbbApi);
     imageData.append("image", imageFile);
@@ -77,32 +78,34 @@ function AddPost({refetch}) {
         if (res.data.data.url) {
           const imgUrl = res.data.data.url;
           try {
-            const response = await axios.post("/api/researches", {
-              imgUrl,
-              tags,
-              postText,
-              isPrivate,
-              author: {
-                name: user?.name,
-                email: user?.email,
-                image: user.image,
-              },
-              actions: {
-                love: [],
-                comment: [],
-                share: 0
-              },
-              postTime: new Date(),
-            });
+            const response = await axios.post(
+              "http://localhost:5000/researches",
+              {
+                imgUrl,
+                tags,
+                postText,
+                isPrivate,
+                author: {
+                  name: user?.name,
+                  email: user?.email,
+                  image: user.image,
+                },
+                actions: {
+                  love: [],
+                  comment: [],
+                  share: 0,
+                },
+                postTime: new Date(),
+              }
+            );
             if (response.data.insertedId) {
-              refetch()
+              refetch();
               toast.success("successfully posted");
               setPostText("");
               setImageFile(null);
               setTags([]);
               setFileInputText("");
               e.target.reset();
-              
             }
           } catch (err) {
             console.log(err.message);
@@ -124,10 +127,7 @@ function AddPost({refetch}) {
         justifyContent="center"
       >
         <Grid item xs={2} sm={1}>
-          <Avatar
-            alt="Cindy Baker"
-            src={user?.image}
-          />
+          <Avatar alt="Cindy Baker" src={user?.image} />
         </Grid>
         <Grid item xs={10} sm={11}>
           {isPosting ? (
@@ -137,7 +137,7 @@ function AddPost({refetch}) {
                   onChange={(e) => setPostText(e.target?.value)}
                   variant="plain"
                   minRows={3}
-                  placeholder={`What's new, ${user ?user?.name : ''}?`}
+                  placeholder={`What's new, ${user ? user?.name : ""}?`}
                 />
               </FormControl>
               <Box
@@ -321,7 +321,7 @@ function AddPost({refetch}) {
               <Input
                 onFocus={() => setIsPosting(true)}
                 sx={{ borderRadius: 12, "& fieldset": { border: "none" } }}
-                placeholder={`What's new, ${user ?user?.name : ''}?`}
+                placeholder={`What's new, ${user ? user?.name : ""}?`}
                 disableUnderline={true}
                 variant="standard"
               />

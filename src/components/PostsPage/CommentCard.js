@@ -7,7 +7,6 @@ import { red } from "@mui/material/colors";
 import { Box } from "@mui/system";
 
 export default function CommentCard({ comment }) {
-  console.log(comment);
   return (
     <Card variant="outlined" sx={{ my: 1, px: 2, pt: 2 }}>
       <Box

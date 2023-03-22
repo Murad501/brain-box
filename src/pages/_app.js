@@ -9,13 +9,11 @@ import {
 } from "@tanstack/react-query";
 import { useState } from "react";
 import PostPageLayout from "@/components/Layout/PostPageLayout";
-import { useRouter } from "next/router";
 import Navbar from "@/components/navbar";
 import Footer from "@/components/footer";
 
 export default function App({ session, Component, pageProps }) {
   const [queryClient] = useState(() => new QueryClient());
-  // const getLayout = Component.getLayout || ((page) => <Layout>{page}</Layout>);
 
   let layout;
   if (Component.layout === "posts") {

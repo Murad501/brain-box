@@ -28,7 +28,6 @@ export function PostCard({ research, refetch }) {
   const user = data?.user;
 
   async function handleAddLike(id) {
-    console.log(id);
     const email = user.email;
     let love;
     if (research.actions.love.includes(email)) {
@@ -36,7 +35,7 @@ export function PostCard({ research, refetch }) {
     } else {
       love = [...research.actions?.love, user.email];
     }
-    fetch(`/api/researches/like-update/${id}`, {
+    fetch(`http://localhost:5000/researches/like-update/${id}`, {
       method: "PUT",
       headers: {
         "content-type": "application/json",
@@ -45,7 +44,6 @@ export function PostCard({ research, refetch }) {
     })
       .then((res) => res.json())
       .then((result) => {
-        console.log(result);
         refetch();
       });
   }
@@ -69,9 +67,8 @@ export function PostCard({ research, refetch }) {
     };
 
     const comment = [...research.actions.comment, currentComment];
-    console.log(comment);
 
-    fetch(`/api/researches/comment-update/${id}`, {
+    fetch(`http://localhost:5000/researches/comment-update/${id}`, {
       method: "PUT",
       headers: {
         "content-type": "application/json",
@@ -112,7 +109,7 @@ export function PostCard({ research, refetch }) {
         <Typography variant="body2" color="text.secondary">
           {research?.postText}
         </Typography>
-        <Box sx={{ mt: 2, display: "flex",justifyContent:'center', gap: 1 }}>
+        <Box sx={{ mt: 2, display: "flex", justifyContent: "center", gap: 1 }}>
           {research?.tags.map((tag, idx) => (
             <Button key={idx} size="sm" variant="soft">
               {tag}
@@ -204,7 +201,7 @@ export function PostCard({ research, refetch }) {
           </Grid>
         </form>
       </Box>
-      <Box sx={{ mx: 8, my: 2, borderTop: '1px solid #E9E9E9' }}>
+      <Box sx={{ mx: 8, my: 2, borderTop: "1px solid #E9E9E9" }}>
         {research.actions.comment.map((comment, idx) => (
           <CommentCard key={idx} comment={comment}></CommentCard>
         ))}
