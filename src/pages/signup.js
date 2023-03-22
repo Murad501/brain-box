@@ -1,7 +1,6 @@
 import * as React from "react";
 import Avatar from "@mui/material/Avatar";
 import Button from "@mui/material/Button";
-import CssBaseline from "@mui/material/CssBaseline";
 import TextField from "@mui/material/TextField";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import Checkbox from "@mui/material/Checkbox";
@@ -12,7 +11,6 @@ import Grid from "@mui/material/Grid";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import Typography from "@mui/material/Typography";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
-import SignUpAnimation from "@/components/Animation/SignUpAnimation";
 
 const theme = createTheme();
 
@@ -35,11 +33,11 @@ export default function Signup() {
           display: "gird",
           justifyContent: "center",
           alignItems: "center",
-          py: 6
+          py: 6,
         }}
       >
         <Grid
-          sx={{ boxShadow: 0, }}
+          sx={{ boxShadow: 0 }}
           item
           xs={12}
           sm={6}
@@ -56,7 +54,7 @@ export default function Signup() {
               alignItems: "center",
               maxWidth: "500px",
               justifyContent: "center",
-              margin: 'auto'
+              margin: "auto",
             }}
           >
             <Avatar sx={{ m: 1, bgcolor: "secondary.main" }}>
@@ -111,7 +109,6 @@ export default function Signup() {
         </Grid>
         <Grid item xs={false} sm={6}>
           {" "}
-          <SignUpAnimation></SignUpAnimation>
         </Grid>
 
         {/* sx={{
