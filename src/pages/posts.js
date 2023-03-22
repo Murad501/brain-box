@@ -12,14 +12,6 @@ export async function getStaticProps() {
       dehydratedState: dehydrate(queryClient),
     },
   };
-  // const response = await fetch('http://localhost:3000/api/researches')
-  // const allResearch = await response.json()
-
-  // return{
-  //   props: {
-  //     allResearch
-  //   }
-  // }
 }
 
 function Posts() {

@@ -5,6 +5,7 @@ const nextConfig = {
 
 
 module.exports = {
+  serverTimeout: 10000,
   images: {
     remotePatterns: [
       {
