@@ -1,10 +1,17 @@
 import { MongoClient } from "mongodb";
 
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@user1.istzhai.mongodb.net/?retryWrites=true&w=majority`;
-console.log(uri);
 
-let client;
-let clientPromise;
+let client = new MongoClient(uri, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  }) 
+let clientPromise = client.connect();
+
+export default async function connectToDatabase() {
+    if (!client.isConnected()) await client.connect()
+    return client
+  }
 
 if (!uri) {
   throw new Error("Please add your Mongo URI to .env.local");
@@ -20,11 +27,8 @@ if (process.env.NODE_ENV === "development") {
   }
   clientPromise = global._mongoClientPromise;
 } else {
-  client = new MongoClient(uri, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  });
+  ;
   clientPromise = client.connect();
 }
 
-export default clientPromise;
+export {clientPromise, client};

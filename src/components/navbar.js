@@ -33,6 +33,8 @@ function Navbar() {
   const { data } = useSession();
   const user = data?.user;
 
+  console.log(user)
+
   const handleOpenNavMenu = (event) => {
     setAnchorElNav(event.currentTarget);
   };

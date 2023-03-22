@@ -24,17 +24,22 @@ const {
 import { GrAttachment } from "react-icons/gr";
 import { Check } from "@mui/icons-material";
 import axios from "axios";
+import { toast } from "react-hot-toast";
+import { useSession } from "next-auth/react";
 
-function AddPost() {
+function AddPost({refetch}) {
   const [isPosting, setIsPosting] = useState(false);
   const [fileInputText, setFileInputText] = useState("");
   const [tagValue, setTagValue] = useState("");
 
   const [tags, setTags] = useState([]);
   const [postText, setPostText] = useState("");
-  const [postType, setPostType] = useState("public");
+  const [isPrivate, setIsPrivate] = useState(false);
   const [imageFile, setImageFile] = useState(null);
+  const [tagText, setTagText] = useState(false);
   const imgbbApi = process.env.NEXT_PUBLIC_Imgbb_API;
+  const { data } = useSession();
+  const user = data?.user;
 
   const handleFileInputChange = (e) => {
     setImageFile(e.target?.files[0]);
@@ -52,25 +57,56 @@ function AddPost() {
   });
 
   const handleAddTag = (e) => {
-    e.preventDefault();
     setTags([...tags, tagValue]);
     setTagValue("");
-    e.target.reset();
+    setTagText(false);
   };
   const handleRemoveTag = (removeTag) => {
     const currentTags = tags.filter((tag) => tag !== removeTag);
     setTags([...currentTags]);
   };
 
-  const handleAddPost = () => {
+  const handleAddPost = (e) => {
+    e.preventDefault();
     const imageData = new FormData();
     imageData.set("key", imgbbApi);
     imageData.append("image", imageFile);
     axios
       .post(`https://api.imgbb.com/1/upload`, imageData)
-      .then((res) => {
+      .then(async (res) => {
         if (res.data.data.url) {
           const imgUrl = res.data.data.url;
+          try {
+            const response = await axios.post("/api/researches", {
+              imgUrl,
+              tags,
+              postText,
+              isPrivate,
+              author: {
+                name: user?.name,
+                email: user?.email,
+                image: user.image,
+              },
+              actions: {
+                love: [],
+                comment: [],
+                share: 0
+              },
+              postTime: new Date(),
+            });
+            if (response.data.insertedId) {
+              refetch()
+              toast.success("successfully posted");
+              setPostText("");
+              setImageFile(null);
+              setTags([]);
+              setFileInputText("");
+              e.target.reset();
+              
+            }
+          } catch (err) {
+            console.log(err.message);
+          }
         }
       })
       .catch((error) => console.log(error));
@@ -90,18 +126,20 @@ function AddPost() {
         <Grid item xs={2} sm={1}>
           <Avatar
             alt="Cindy Baker"
-            src="https://scontent.fcgp28-1.fna.fbcdn.net/v/t39.30808-6/315979480_866742761009362_1000142067801083796_n.jpg?_nc_cat=108&ccb=1-7&_nc_sid=174925&_nc_ohc=5Q_9c6sYYh4AX8_EsJi&_nc_ht=scontent.fcgp28-1.fna&oh=00_AfCeKhS_LuImRN1VTZWrKEXm85NNJzCq84bRv0FQEUj0pQ&oe=641B1C63"
+            src={user?.image}
           />
         </Grid>
         <Grid item xs={10} sm={11}>
           {isPosting ? (
-            <FormControl sx={{ width: "100%" }}>
-              <Textarea
-                onChange={(e) => setPostText(e.target?.value)}
-                variant="plain"
-                minRows={3}
-                placeholder="What's new, One?"
-              />
+            <form onSubmit={handleAddPost}>
+              <FormControl sx={{ width: "100%" }}>
+                <Textarea
+                  onChange={(e) => setPostText(e.target?.value)}
+                  variant="plain"
+                  minRows={3}
+                  placeholder={`What's new, ${user ?user?.name : ''}?`}
+                />
+              </FormControl>
               <Box
                 sx={{
                   py: 1,
@@ -148,8 +186,7 @@ function AddPost() {
                 ) : (
                   ""
                 )}
-                <form
-                  onSubmit={handleAddTag}
+                <Box
                   style={{
                     display: "flex",
                     alignItems: "center",
@@ -158,18 +195,22 @@ function AddPost() {
                 >
                   <Box sx={{ display: "flex", alignItems: "center", ml: 1 }}>
                     <AiFillTags></AiFillTags>
-                    <Input
-                      onChange={(e) => setTagValue(e.target?.value)}
-                      onFocus={() => setIsPosting(true)}
-                      sx={{ borderRadius: 12, display: "block", ml: 1 }}
-                      placeholder="Add a tag..."
-                      disableUnderline={true}
-                      //   variant="standard"
-                    />
+                    <FormControl>
+                      <Input
+                        name="tag"
+                        onChange={(e) => {
+                          setTagValue(e.target?.value);
+                          setTagText(true);
+                        }}
+                        sx={{ borderRadius: 12, display: "block", ml: 1 }}
+                        placeholder="Add a tag..."
+                        disableUnderline={true}
+                      />
+                    </FormControl>
                   </Box>
                   {tagValue && (
                     <IconButton
-                      type="submit"
+                      onClick={(e) => handleAddTag(e)}
                       variant="solid"
                       sx={{
                         height: 30,
@@ -180,7 +221,7 @@ function AddPost() {
                       <Check sx={{ width: 20, height: 20 }} />
                     </IconButton>
                   )}
-                </form>
+                </Box>
                 <>
                   <input
                     type="file"
@@ -236,14 +277,20 @@ function AddPost() {
               >
                 <Grid item>
                   <CssVarsProvider theme={theme}>
-                    <Select
-                      onChange={(e) => setPostType(e?.target?.innerText)}
-                      defaultValue="Public"
-                      placeholder="Post Type"
-                    >
-                      <Option value="public">Public</Option>
-                      <Option value="private">Private</Option>
-                    </Select>
+                    <FormControl>
+                      <Select
+                        onChange={(e) =>
+                          setIsPrivate(
+                            e?.target?.innerText === "Public" ? false : true
+                          )
+                        }
+                        defaultValue="Public"
+                        placeholder="Post Type"
+                      >
+                        <Option value="public">Public</Option>
+                        <Option value="private">Private</Option>
+                      </Select>
+                    </FormControl>
                   </CssVarsProvider>
                 </Grid>
                 <Grid item>
@@ -255,25 +302,26 @@ function AddPost() {
                   >
                     Cancel
                   </Button>
-                  <Button
-                    onClick={() => handleAddPost()}
-                    color="primary"
-                    // onClick={function () {}}
-                    size="sm"
-                    variant="outlined"
-                    sx={{ ml: 1 }}
-                  >
-                    Post Update
-                  </Button>
+                  <FormControl>
+                    <Button
+                      type="submit"
+                      color="primary"
+                      size="sm"
+                      variant="outlined"
+                      sx={{ ml: 1 }}
+                    >
+                      Post Update
+                    </Button>
+                  </FormControl>
                 </Grid>
               </Grid>
-            </FormControl>
+            </form>
           ) : (
             <FormControl sx={{ width: "100%" }}>
               <Input
                 onFocus={() => setIsPosting(true)}
                 sx={{ borderRadius: 12, "& fieldset": { border: "none" } }}
-                placeholder="What's new, One?"
+                placeholder={`What's new, ${user ?user?.name : ''}?`}
                 disableUnderline={true}
                 variant="standard"
               />
