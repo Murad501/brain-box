@@ -1,6 +1,7 @@
 import PostPageLayout from "@/components/Layout/PostPageLayout";
 import AddPost from "@/components/PostsPage/AddPost";
 import { PostCard } from "@/components/PostsPage/PostCard";
+import { Typography } from "@mui/material";
 import { Box } from "@mui/system";
 import { dehydrate, QueryClient, useQuery } from "@tanstack/react-query";
 
@@ -15,11 +16,13 @@ export async function getStaticProps() {
 }
 
 function Posts() {
-  const { data: allResearch = [], refetch } = useQuery({
+  const { data: allResearch = [], refetch, isLoading } = useQuery({
     queryKey: ["researches"],
     queryFn: () => fetch("/api/researches").then((res) => res.json()),
   });
-  console.log(allResearch);
+  if(isLoading){
+    return <Typography>Loading...</Typography>
+  }
   return (
     <PostPageLayout>
       <Box>
