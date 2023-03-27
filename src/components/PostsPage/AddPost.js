@@ -79,7 +79,7 @@ function AddPost({ refetch }) {
           const imgUrl = res.data.data.url;
           try {
             const response = await axios.post(
-              "http://localhost:5000/researches",
+              " https://brain-box-server.vercel.app/researches",
               {
                 imgUrl,
                 tags,

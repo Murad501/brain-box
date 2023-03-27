@@ -35,7 +35,7 @@ export function PostCard({ research, refetch }) {
     } else {
       love = [...research.actions?.love, user.email];
     }
-    fetch(`http://localhost:5000/researches/like-update/${id}`, {
+    fetch(` https://brain-box-server.vercel.app/researches/like-update/${id}`, {
       method: "PUT",
       headers: {
         "content-type": "application/json",
@@ -68,7 +68,7 @@ export function PostCard({ research, refetch }) {
 
     const comment = [...research.actions.comment, currentComment];
 
-    fetch(`http://localhost:5000/researches/comment-update/${id}`, {
+    fetch(` https://brain-box-server.vercel.app/researches/comment-update/${id}`, {
       method: "PUT",
       headers: {
         "content-type": "application/json",

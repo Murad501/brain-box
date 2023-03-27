@@ -18,7 +18,7 @@ export async function getStaticProps() {
 function Posts() {
   const { data: allResearch = [], refetch, isLoading } = useQuery({
     queryKey: ["researches"],
-    queryFn: () => fetch("http://localhost:5000/researches").then((res) => res.json()),
+    queryFn: () => fetch(" https://brain-box-server.vercel.app/researches").then((res) => res.json()),
   });
   if(isLoading){
     return <Typography>Loading...</Typography>
